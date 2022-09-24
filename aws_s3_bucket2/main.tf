@@ -11,10 +11,6 @@ resource "aws_s3_object" "finance-2022" {
   bucket  = aws_s3_bucket.finance.id
 }
 
-data "aws_iam_group" "finance-data" {
-  group_name = "finance-analysts"
-}
-
 resource "aws_s3_bucket_policy" "finance-policy" {
   bucket = aws_s3_bucket.finance.id
   policy = data.aws_iam_policy_document.allow_access_for_group.json
@@ -22,11 +18,6 @@ resource "aws_s3_bucket_policy" "finance-policy" {
 
 data "aws_iam_policy_document" "allow_access_for_group" {
   statement {
-    principals {
-      type        = "AWS"
-      identifiers = [ "${data.aws_iam_group.finance-data.arn}"]
-    }
-
     actions = [
       "s3:GetObject",
       "s3:ListBucket",

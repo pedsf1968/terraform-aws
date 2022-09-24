@@ -11,9 +11,14 @@ resource "aws_s3_bucket_object" "korea-flag-2022" {
   bucket  = aws_s3_bucket.korea.id
 }
 
-data "aws_iam_group" "korean-friends-data" {
-  group_name = "korean-friends"
+data "aws_iam_user" "korean-friends-lucy" {
+  user_name = "lucy"
 }
+
+data "aws_iam_user" "korean-friends-isa" {
+  user_name = "isa"
+}
+
 
 resource "aws_s3_bucket_policy" "korean-friends-policy" {
   bucket = aws_s3_bucket.korea.id
@@ -27,7 +32,8 @@ resource "aws_s3_bucket_policy" "korean-friends-policy" {
       "Resource": "arn:aws:s3:::${aws_s3_bucket.korea.id}/*",
       "Principal": {
         "AWS": [
-          "${data.aws_iam_group.korean-friends-data.arn}"
+          "${data.aws_iam_user.korean-friends-isa.arn}",
+          "${data.aws_iam_user.korean-friends-lucy.arn}"
         ]
       }
     }
