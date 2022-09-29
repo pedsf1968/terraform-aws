@@ -1,6 +1,6 @@
 resource "aws_instance" "app_server" {
   ami = var.ami
-  instance_type =  "t2.medium"
+  instance_type =  "t2.small"
   tags = {
     Name = "${var.app_region}-app-server"
   }
