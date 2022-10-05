@@ -2,6 +2,10 @@ resource "aws_instance" "ec2-instance" {
   ami             = var.ami["eu-west-3-ami-1"]
   instance_type   = var.instance_type
   security_groups = [ aws_security_group.ec2-security-group.name ]
+  
+  depends_on = [
+    aws_security_group.ec2-security-group
+  ]
 }
 
 resource "aws_security_group" "ec2-security-group" {
@@ -14,29 +18,33 @@ resource "aws_security_group" "ec2-security-group" {
     Environment = "Test"
     ManagedBy   = "terraform"
   }
+
+  dynamic "ingress" {
+    iterator = port
+    for_each = var.ingress-port
+    content {
+      description = "Ingress trafic for ${port.key}"
+      from_port         = port.value
+      to_port           = port.value
+      protocol          = "tcp"
+      cidr_blocks       = ["0.0.0.0/0"]
+    }
+  }
+
+  dynamic "egress" {
+    iterator = port
+    for_each = var.egress-port
+    content {
+      description = "Egress trafic for ${port.key}"
+      from_port         = port.value
+      to_port           = port.value
+      protocol          = "tcp"
+      cidr_blocks       = ["0.0.0.0/0"]
+    }
+  }
+
 }
 
-resource "aws_security_group_rule" "public_in_https" {
-  type              = "ingress"
-  from_port         = each.value
-  to_port           = each.value
-  protocol          = "tcp"
-  cidr_blocks       = ["0.0.0.0/0"]
-  security_group_id = aws_security_group.ec2-security-group.id
-
-  for_each = var.ingress-port
-}
- 
-resource "aws_security_group_rule" "public_out_https" {
-  type              = "egress"
-  from_port         = each.value
-  to_port           = each.value
-  protocol          = "tcp"
-  cidr_blocks       = ["0.0.0.0/0"]
-  security_group_id = aws_security_group.ec2-security-group.id
-
-  for_each = var.egress-port
-}
 
 resource "aws_eip" "ec2-eip" {
   instance = aws_instance.ec2-instance.id

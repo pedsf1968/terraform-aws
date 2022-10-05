@@ -17,22 +17,3 @@ variable "instance_type" {
   default     = "t2.micro"
   description = "Minimal instance type"
 }
-
-variable "ingress-port" {
-  type = map(number)
-  default = {
-    http = 80
-    https = 443
-    ssh = 22
-    }
-  description = "List of ports allowed for Ingress trafic"
-}
-
-variable "egress-port" {
-  type = map(number)
-  default = {
-    http = 80
-    https = 443
-    }
-  description = "List of ports allowed for Ingress trafic"
-}
